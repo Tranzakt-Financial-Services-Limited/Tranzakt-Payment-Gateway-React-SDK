@@ -1,0 +1,16 @@
+/node_modules
+/src
+/.github
+/.vscode
+
+# Coverage reports
+coverage/
+*.lcov
+
+/tests
+
+example.ts
+.env
+tsconfig.json
+jest.config.js
+LICENSE.md

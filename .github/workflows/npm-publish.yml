@@ -1,0 +1,123 @@
+name: Tranzakt React SDK
+
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - "v*" # Ignore version tags to prevent deployment loop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
+
+  publish:
+    needs: test
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      !startsWith(github.event.head_commit.message, 'chore(release):') &&
+      !contains(github.event.head_commit.message, 'skip-ci')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build SDK
+        run: |
+          npm run build:esm
+          npm run build:cjs
+
+      - name: Check build artifacts
+        run: |
+          if [ ! -d "dist/esm" ] || [ ! -d "dist/cjs" ] || [ ! -d "dist/types" ]; then
+            echo "Error: Missing build artifacts"
+            exit 1
+          fi
+
+      - name: Check package name
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          if [[ $PACKAGE_NAME != "tpp-react-sdk" ]]; then
+            echo "Error: Package name mismatch"
+            exit 1
+          fi
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'Tranzakt Bot'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Clean working directory
+        run: |
+          git add .
+          git commit -m "chore: build artifacts [skip-ci]" || true
+          git reset --hard HEAD
+
+      - name: Version bump and publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+          # Bump version
+          npm version patch -m "chore(release): %s [skip-ci]"
+
+          # Get new version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+
+          # Publish to npm
+          npm publish
+
+          # Push changes and tags
+          git push --follow-tags
+
+          # Create GitHub release
+          gh release create v${NEW_VERSION} \
+            --title "Tranzakt React SDK v${NEW_VERSION}" \
+            --notes "Release of Tranzakt React SDK version ${NEW_VERSION}
+
+            ## What's Changed
+            - Automated release from main branch
+            - Package includes:
+              - CommonJS build (Node.js require)
+              - ES Modules build (Node.js import)
+              - TypeScript type definitions
+            
+            For full documentation, visit our [GitHub repository](https://github.com/Tranzakt-Financial-Services-Limited/Tranzakt-Payment-Gateway-React-SDK)"

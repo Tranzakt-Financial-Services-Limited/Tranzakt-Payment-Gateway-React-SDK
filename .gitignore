@@ -1,0 +1,9 @@
+/node_modules
+/dist
+
+example.ts
+.env
+.Ds_Store
+# Coverage reports
+coverage/
+*.lcov
