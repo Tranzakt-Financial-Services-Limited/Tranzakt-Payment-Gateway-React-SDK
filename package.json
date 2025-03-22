@@ -1,5 +1,5 @@
 {
-  "name": "tpp-react-sdk",
+  "name": "tranzakt-react-sdk",
   "version": "0.0.3",
   "description": "Tranzakt Payment Gateway Reactjs SDK.",
   "main": "dist/cjs/index.js",

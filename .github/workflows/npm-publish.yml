@@ -76,7 +76,7 @@ jobs:
       - name: Check package name
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
-          if [[ $PACKAGE_NAME != "tpp-react-sdk" ]]; then
+          if [[ $PACKAGE_NAME != "tranzakt-react-sdk" ]]; then
             echo "Error: Package name mismatch"
             exit 1
           fi

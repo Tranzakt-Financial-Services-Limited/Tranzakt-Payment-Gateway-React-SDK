@@ -1,19 +1,19 @@
-# Tranzakt Payment Platform (TPP) SDK
+# Tranzakt Payment Platform (TPP) React SDK
 
 A Node.js library for seamless integration with TPP APIs. This SDK simplifies your integration by providing an intuitive interface for making API calls.
 
 ## Installation
 
 ```bash
-npm install --save tranzakt-node-sdk
+npm install --save tranzakt-react-sdk
 # or
-yarn add tranzakt-node-sdk
+yarn add tranzakt-react-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { Tranzakt } from "tranzakt-node-sdk";
+import { Tranzakt } from "tranzakt-react-sdk";
 
 const tranzakt = new Tranzakt("your-secret-key");
 ```
