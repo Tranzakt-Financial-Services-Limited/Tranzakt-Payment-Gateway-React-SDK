@@ -83,13 +83,20 @@ describe("InvoiceService", () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
           ok: true,
+          status: 201,
           json: () => Promise.resolve(mockInvoiceResponse),
         } as Response)
       ) as jest.Mock;
 
       const response = await tranzakt.createInvoice(mockInvoiceData);
 
-      expect(response).toEqual(mockInvoiceResponse);
+      expect(response).toEqual({
+        success: true,
+        data: mockInvoiceResponse,
+        status: 201,
+        message: "Success",
+      });
+
       expect(fetch).toHaveBeenCalledWith(
         `${BASE_URL}${INVOICE_URL}`,
         expect.objectContaining({
@@ -131,15 +138,21 @@ describe("InvoiceService", () => {
         amount: 0,
       };
 
-      await expect(tranzakt.createInvoice(invalidData)).rejects.toEqual(
-        mockError
-      );
+      const response = await tranzakt.createInvoice(invalidData);
+
+      expect(response).toEqual({
+        success: false,
+        data: null,
+        status: 400,
+        message: "Validation failed",
+      });
     });
 
     it("should create an invoice without optional fields", async () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
           ok: true,
+          status: 201,
           json: () => Promise.resolve(mockInvoiceResponse),
         } as Response)
       ) as jest.Mock;
@@ -158,7 +171,14 @@ describe("InvoiceService", () => {
         ],
       };
 
-      await tranzakt.createInvoice(minimalInvoiceData);
+      const response = await tranzakt.createInvoice(minimalInvoiceData);
+
+      expect(response).toEqual({
+        success: true,
+        data: mockInvoiceResponse,
+        status: 201,
+        message: "Success",
+      });
 
       expect(fetch).toHaveBeenCalledWith(
         `${BASE_URL}${INVOICE_URL}`,
