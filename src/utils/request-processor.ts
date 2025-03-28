@@ -1,5 +1,5 @@
 import { BASE_URL } from "../config";
-import { ApiError } from "../types";
+import { ApiError, ApiResponse, StandardApiResponse } from "../types";
 
 type IRequestParam<T = any> = {
   url: string;
@@ -13,7 +13,7 @@ export async function requestProcessor<T>({
   method,
   data,
   headers,
-}: IRequestParam): Promise<T> {
+}: IRequestParam): Promise<ApiResponse<T>> {
   const config: RequestInit = {
     method,
     headers: {
@@ -21,8 +21,9 @@ export async function requestProcessor<T>({
       "Content-Type": "application/json",
       ...headers,
     },
-    body: JSON.stringify(data),
+    body: data ? JSON.stringify(data) : undefined,
   };
+
   try {
     const response = await fetch(`${BASE_URL}${url}`, config);
 
@@ -34,20 +35,41 @@ export async function requestProcessor<T>({
         errors: [response.statusText],
       }))) as ApiError;
 
-      return Promise.reject(errorResponse);
+      return {
+        success: false,
+        data: null as unknown as T,
+        status: errorResponse.status,
+        message: errorResponse.message ?? "An error occurred",
+      };
     }
 
-    const responseData = (await response.json()) as T;
-    return responseData;
-  } catch (error: any) {
-    console.log("here", error);
+    // Parse the response data
+    const responseData = (await response.json()) as StandardApiResponse<T>;
 
+    // If the response follows StandardApiResponse structure, use its data
+    if (responseData && "data" in responseData) {
+      return {
+        success: true,
+        data: responseData.data,
+        status: responseData.status,
+        message: responseData.message,
+      };
+    }
+
+    // If the entire response is the data, return it directly
+    return {
+      success: true,
+      data: responseData,
+      status: response.status,
+      message: "Success",
+    };
+  } catch (error: any) {
     // Handle network errors or unexpected issues
-    return Promise.reject({
+    return {
+      success: false,
+      data: null as unknown as T,
       status: 500,
-      message: error?.message ?? "NetworkError",
-      type: "NetworkError",
-      errors: [error instanceof Error ? error.message : "Unknown error"],
-    } as ApiError);
+      message: error?.message,
+    };
   }
 }

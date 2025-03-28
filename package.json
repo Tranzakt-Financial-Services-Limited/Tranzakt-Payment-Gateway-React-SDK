@@ -1,15 +1,16 @@
 {
   "name": "tranzakt-react-sdk",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Tranzakt Payment Gateway Reactjs SDK.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "build:esm": "tsc --module ES2020 --outDir dist/esm",
-    "build:cjs": "tsc --module CommonJS --outDir dist/cjs",
-    "build": "npm run build:esm && npm run build:cjs",
-    "test": "jest"
+    "build:esm": "tsc -p tsconfig.esm.json && node scripts/rename-to-mjs.js",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build": "npm run build:cjs && npm run build:esm",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "Tranzakt, TPP, Payment Gateway"

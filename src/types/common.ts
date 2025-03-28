@@ -9,10 +9,15 @@ export type PaginatedData<T> = {
 
 export type ApiResponse<T> = {
   data: T;
+  success: boolean;
   status: number;
   message: string;
 };
-
+export type StandardApiResponse<T> = {
+  data: T;
+  status: number;
+  message: string;
+};
 export type ApiError = {
   status: number;
   message: string;
