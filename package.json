@@ -1,6 +1,6 @@
 {
   "name": "tranzakt-react-sdk",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Tranzakt Payment Gateway Reactjs SDK.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
