@@ -24,15 +24,6 @@
     "ts-jest": "^29.2.4",
     "typescript": "^5.5.4"
   },
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./dist/esm/index.js"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Tranzakt-Financial-Services-Limited/Tranzakt-Payment-Gateway-React-SDK.git"

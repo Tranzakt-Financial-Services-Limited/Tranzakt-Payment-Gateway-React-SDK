@@ -39,12 +39,11 @@ const response = await tranzakt.createInvoice({
   // Optional parameters (some may be required based on collection settings)
   amount: 40000, // Required if collection has no fixed amount
   invoiceBeneficiaries: [
-    // Required if collection has no fixed beneficiaries
     {
-      linkedAccountId: "37a71e2e-ed54-4e46-a3a9-47a211c352ea",
+      linkedAccountId: "02VUJZW14MER86VWAFWDQGH92T",
       amount: 20000,
     },
-  ],
+  ], // Required if collection has no fixed beneficiaries
   callBackUrl: "https://your-callback-url.com/webhook",
   billerMetaData: {
     "order-id": "12345",
@@ -138,7 +137,7 @@ When creating invoices:
 
 ## Support
 
-- Email: hi@tranzakt.app
+- Email: support@tranzakt.finance
 - Docs: https://docs.tranzakt.com
 
 ## License
